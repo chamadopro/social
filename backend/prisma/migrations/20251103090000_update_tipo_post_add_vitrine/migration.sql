@@ -1,0 +1,5 @@
+-- Add Vitrine types to TipoPost enum (idempotent)
+ALTER TYPE "TipoPost" ADD VALUE IF NOT EXISTS 'VITRINE_PRESTADOR';
+ALTER TYPE "TipoPost" ADD VALUE IF NOT EXISTS 'VITRINE_CLIENTE';
+
+

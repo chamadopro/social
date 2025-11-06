@@ -1,0 +1,90 @@
+# ======================================================
+# ChamadoPro – Arquivo .gitignore (versão 2025-11-01)
+# ======================================================
+# Define o que o Git deve ignorar durante versionamento.
+# Alinhado com o .cursorignore para manter coerência.
+# ======================================================
+
+# 🧩 1. Dependências e builds
+node_modules/
+dist/
+build/
+.cache/
+.next/
+out/
+coverage/
+
+# 🧩 2. Logs e arquivos temporários
+logs/
+tmp/
+temp/
+*.log
+*.tmp
+*.bak
+*.old
+*.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 🧩 3. Ambientes e credenciais
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+.env.example
+
+# 🧩 4. Snapshots e backups
+Checklist/_snapshot_*
+Checklist/SNAPSHOT_*
+*_backup/
+*_old/
+*_antigo/
+
+# 🧩 5. Caches e artefatos de compilação
+*.tsbuildinfo
+*.eslintcache
+*.swp
+*.swo
+*.pid
+*.seed
+*.pid.lock
+
+# 🧩 6. Uploads e arquivos gerados
+backend/uploads/
+Checklist/LIMPEZA_CONCLUIDA.md
+
+# 🧩 7. Arquivos e pastas de IDE
+.vscode/
+.idea/
+.history/
+*.code-workspace
+
+# 🧩 8. Arquivos de sistema (Windows/macOS)
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# 🧩 9. Repositórios e controle
+.git/
+.gitattributes
+.cursorignore
+
+# 🧩 10. Artefatos de dependências e scripts
+*.tgz
+*.zip
+*.tar
+*.gz
+
+# ======================================================
+# Notas:
+# - Evita versionar builds, dependências e arquivos locais.
+# - Protege credenciais e caches.
+# - Mantém apenas código-fonte e documentação oficial.
+# ======================================================
+# Última revisão: 01/11/2025 – Alexandro Trova
+# ======================================================

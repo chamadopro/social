@@ -1,0 +1,548 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                       String                @id @default(uuid())
+  tipo                     TipoUsuario
+  nome                     String
+  email                    String                @unique
+  senha                    String
+  telefone                 String
+  cpf_cnpj                 String                @unique
+  data_nascimento          DateTime
+  endereco                 Json
+  foto_perfil              String?
+  // Campos específicos de cliente/prestador
+  tipo_cliente             String? // PF ou PJ (para clientes)
+  tipo_prestador           String? // PF ou PJ (para prestadores)
+  descricao_profissional   String? // Descrição dos serviços
+  areas_atuacao            String[]              @default([]) // Categorias de atuação
+  portfolio                String[]              @default([]) // URLs de fotos/vídeos
+  certificacoes            String? // Certificações
+  experiencia_profissional String? // Experiência profissional
+  documento_verificacao    String? // URL do documento (Certidão ou Contrato social)
+  documento_verificado     Boolean               @default(false) // Se o documento foi aprovado
+  // Status e controle
+  ativo                    Boolean               @default(true)
+  verificado               Boolean               @default(false)
+  reputacao                Float                 @default(0.0)
+  total_avaliacoes         Int                   @default(0)
+  pontos_penalidade        Int                   @default(0)
+  data_cadastro            DateTime              @default(now())
+  data_atualizacao         DateTime              @updatedAt
+  avaliacoes_recebidas     Avaliacao[]           @relation("AvaliadoAvaliacoes")
+  avaliacoes_enviadas      Avaliacao[]           @relation("AvaliadorAvaliacoes")
+  Comentario               Comentario[]
+  contratos_cliente        Contrato[]            @relation("ClienteContratos")
+  contratos_prestador      Contrato[]            @relation("PrestadorContratos")
+  negociacoes              NegociacaoOrcamento[] @relation("NegociacoesAutor")
+  Curtida                  Curtida[]
+  disputas_cliente         Disputa[]             @relation("ClienteDisputas")
+  disputas_moderador       Disputa[]             @relation("ModeradorDisputas")
+  disputas_prestador       Disputa[]             @relation("PrestadorDisputas")
+  logs                     Log[]
+  mensagens                Mensagem[]
+  notificacoes             Notificacao[]
+  orcamentos_recebidos     Orcamento[]           @relation("ClienteOrcamentos")
+  orcamentos_enviados      Orcamento[]           @relation("PrestadorOrcamentos")
+  posts                    Post[]
+  posts_recomendados       Post[]                @relation("PostPrestadorRecomendado")
+  tokens_verificacao       TokenVerificacao[]
+  transacoes_moedas        TransacaoMoeda[]
+  saldo_moedas             Int                   @default(0) // Saldo de moedas ChamadoPro
+  movimentacoes_financeiras MovimentacaoFinanceira[]
+  contas_bancarias         ContaBancaria[]
+  cartoes                  Cartao[]
+
+  @@map("usuarios")
+}
+
+model Post {
+  id                     String           @id @default(uuid())
+  usuario_id             String
+  tipo                   TipoPost
+  titulo                 String
+  categoria              String
+  descricao              String
+  localizacao            Json
+  preco_estimado         Float?
+  valor_por_hora         Float?
+  prazo                  DateTime?
+  fotos                  String[]
+  urgencia               Urgencia         @default(BAIXA)
+  disponibilidade        Disponibilidade?
+  status                 StatusPost       @default(ATIVO)
+  is_apresentacao        Boolean          @default(false)
+  // Novos campos para fluxo de orçamentos e finalização
+  prestador_escolhido_id String?
+  manter_visivel         Boolean          @default(false) // Se deve aparecer em Serviços Concluídos
+  excluido               Boolean          @default(false) // Se foi excluído permanentemente
+  // Campos para Vitrine Cliente - associação com serviço concluído
+  servico_relacionado_id  String? // ID do contrato concluído associado
+  prestador_recomendado_id String? // Prestador recomendado (do contrato associado)
+  data_criacao           DateTime         @default(now())
+  data_atualizacao       DateTime         @updatedAt
+  comentarios            Comentario[]
+  curtidas               Curtida[]
+  orcamentos             Orcamento[]
+  servico_relacionado    Contrato?        @relation("PostServicoRelacionado", fields: [servico_relacionado_id], references: [id])
+  prestador_recomendado  Usuario?         @relation("PostPrestadorRecomendado", fields: [prestador_recomendado_id], references: [id])
+  usuario                Usuario          @relation(fields: [usuario_id], references: [id])
+
+  @@map("posts")
+}
+
+model Orcamento {
+  id                  String          @id @default(uuid())
+  post_id             String
+  prestador_id        String
+  cliente_id          String
+  valor               Float
+  descricao           String
+  prazo_execucao      Int
+  condicoes_pagamento String
+  fotos               String[]
+  garantia            String?
+  desconto            Float?
+  status              StatusOrcamento @default(PENDENTE)
+  data_criacao        DateTime        @default(now())
+  data_atualizacao    DateTime        @updatedAt
+  data_expiracao      DateTime?
+  observacoes         String?
+
+  // Campos para negociação
+  valor_original    Float?
+  prazo_original    Int?
+  contrapropostas   Int       @default(0)
+  ultima_negociacao DateTime?
+
+  contrato    Contrato?
+  negociacoes NegociacaoOrcamento[]
+  cliente     Usuario               @relation("ClienteOrcamentos", fields: [cliente_id], references: [id])
+  post        Post                  @relation(fields: [post_id], references: [id])
+  prestador   Usuario               @relation("PrestadorOrcamentos", fields: [prestador_id], references: [id])
+
+  @@map("orcamentos")
+}
+
+model NegociacaoOrcamento {
+  id            String    @id @default(uuid())
+  orcamento_id  String
+  autor_id      String
+  tipo          String // PROPOSTA, CONTRAPROPOSTA, ACEITE, REJEICAO, PERGUNTA
+  valor         Float?
+  prazo         Int?
+  descricao     String
+  status        String    @default("ATIVA") // ATIVA, RESPONDIDA, EXPIRADA
+  data_criacao  DateTime  @default(now())
+  data_resposta DateTime?
+
+  orcamento Orcamento @relation(fields: [orcamento_id], references: [id], onDelete: Cascade)
+  autor     Usuario   @relation("NegociacoesAutor", fields: [autor_id], references: [id])
+
+  @@map("negociacoes_orcamento")
+}
+
+model Contrato {
+  id                     String         @id @default(uuid())
+  orcamento_id           String         @unique
+  cliente_id              String
+  prestador_id            String
+  valor                   Float
+  prazo                   DateTime
+  condicoes               String
+  garantias               String
+  status                  StatusContrato @default(ATIVO)
+  // Campos para controle de andamento
+  data_inicio             DateTime?      // Quando o trabalho foi iniciado
+  data_fim                DateTime?      // Quando o trabalho foi finalizado
+  quem_iniciou            String?        // 'CLIENTE' | 'PRESTADOR'
+  quem_finalizou          String?        // 'CLIENTE' | 'PRESTADOR'
+  aguardando_liberacao    Boolean        @default(false) // Se está aguardando período de liberação
+  data_liberacao_prevista DateTime?      // Data prevista para liberação (quando prestador finaliza)
+  // Campos para fotos de evidência (importante para disputas)
+  fotos_antes             String[]       @default([]) // Fotos do estado inicial do serviço
+  fotos_depois            String[]       @default([]) // Fotos do estado final do serviço
+  data_criacao            DateTime       @default(now())
+  data_atualizacao        DateTime       @updatedAt
+  avaliacoes              Avaliacao[]
+  cliente                 Usuario        @relation("ClienteContratos", fields: [cliente_id], references: [id])
+  orcamento               Orcamento      @relation(fields: [orcamento_id], references: [id])
+  prestador               Usuario        @relation("PrestadorContratos", fields: [prestador_id], references: [id])
+  disputa                 Disputa?
+  mensagens                Mensagem[]
+  pagamento               Pagamento?
+  posts_vinculados        Post[]          @relation("PostServicoRelacionado")
+
+  @@map("contratos")
+}
+
+model Pagamento {
+  id               String          @id @default(uuid())
+  contrato_id      String          @unique
+  valor            Float
+  metodo           MetodoPagamento
+  status           StatusPagamento @default(PENDENTE)
+  transacao_id     String?
+  data_pagamento   DateTime?
+  data_liberacao   DateTime?
+  taxa_plataforma  Float
+  // Campos para controle de liberação
+  liberado_por     String?         // 'CLIENTE' | 'PRESTADOR' | 'AUTOMATICO'
+  motivo_liberacao String?         // Descrição do motivo da liberação
+  data_criacao     DateTime        @default(now())
+  data_atualizacao DateTime        @updatedAt
+  contrato         Contrato        @relation(fields: [contrato_id], references: [id])
+
+  @@map("pagamentos")
+}
+
+model Avaliacao {
+  id           String   @id @default(uuid())
+  avaliador_id String
+  avaliado_id  String
+  contrato_id  String
+  nota         Int
+  comentario   String?
+  tipo         String   @default("SERVICO")
+  aspectos     Json?
+  data_criacao DateTime @default(now())
+  avaliado     Usuario  @relation("AvaliadoAvaliacoes", fields: [avaliado_id], references: [id])
+  avaliador    Usuario  @relation("AvaliadorAvaliacoes", fields: [avaliador_id], references: [id])
+  contrato     Contrato @relation(fields: [contrato_id], references: [id])
+
+  @@map("avaliacoes")
+}
+
+model Disputa {
+  id             String        @id @default(uuid())
+  contrato_id    String        @unique
+  cliente_id     String
+  prestador_id   String
+  moderador_id   String?
+  tipo           TipoDisputa
+  descricao      String
+  evidencias     String[]
+  status         StatusDisputa @default(ABERTA)
+  decisao        String?
+  data_criacao   DateTime      @default(now())
+  data_resolucao DateTime?
+  cliente        Usuario       @relation("ClienteDisputas", fields: [cliente_id], references: [id])
+  contrato       Contrato      @relation(fields: [contrato_id], references: [id])
+  moderador      Usuario?      @relation("ModeradorDisputas", fields: [moderador_id], references: [id])
+  prestador      Usuario       @relation("PrestadorDisputas", fields: [prestador_id], references: [id])
+
+  @@map("disputas")
+}
+
+model Mensagem {
+  id              String       @id @default(uuid())
+  contrato_id     String
+  usuario_id      String
+  conteudo        String
+  tipo            TipoMensagem @default(TEXTO)
+  anexo_url       String?
+  bloqueada       Boolean      @default(false)
+  motivo_bloqueio String?
+  data_criacao    DateTime     @default(now())
+  contrato        Contrato     @relation(fields: [contrato_id], references: [id])
+  usuario         Usuario      @relation(fields: [usuario_id], references: [id])
+
+  @@map("mensagens")
+}
+
+model Curtida {
+  id           String   @id @default(uuid())
+  post_id      String
+  usuario_id   String
+  data_criacao DateTime @default(now())
+  post         Post     @relation(fields: [post_id], references: [id])
+  usuario      Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@unique([post_id, usuario_id])
+  @@map("curtidas")
+}
+
+model TransacaoMoeda {
+  id           String   @id @default(uuid())
+  usuario_id   String
+  tipo         String   // 'CREDITO' | 'DEBITO'
+  valor        Int      // Quantidade de moedas
+  descricao    String
+  origem       String?  // 'RECOMENDACAO_PRESTADOR' | 'COMPRA' | 'DESCONTO' | 'PROMOCAO'
+  referencia_id String? // ID do post/contrato que gerou (opcional)
+  data_criacao DateTime @default(now())
+  usuario      Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@index([usuario_id, data_criacao])
+  @@map("transacoes_moedas")
+}
+
+model Comentario {
+  id           String   @id @default(uuid())
+  post_id      String
+  usuario_id   String
+  conteudo     String
+  data_criacao DateTime @default(now())
+  post         Post     @relation(fields: [post_id], references: [id])
+  usuario      Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@map("comentarios")
+}
+
+model Notificacao {
+  id           String          @id @default(uuid())
+  usuario_id   String
+  tipo         TipoNotificacao
+  titulo       String
+  mensagem     String
+  lida         Boolean         @default(false)
+  dados        Json? // Dados extras da notificação
+  data_criacao DateTime        @default(now())
+  usuario      Usuario         @relation(fields: [usuario_id], references: [id])
+
+  @@map("notificacoes")
+}
+
+model Log {
+  id           String   @id @default(uuid())
+  usuario_id   String?
+  acao         String
+  detalhes     String
+  ip           String?
+  user_agent   String?
+  data_criacao DateTime @default(now())
+  usuario      Usuario? @relation(fields: [usuario_id], references: [id])
+
+  @@map("logs")
+}
+
+model MovimentacaoFinanceira {
+  id            String   @id @default(uuid())
+  usuario_id   String
+  tipo          String   // ENTRADA ou SAIDA
+  valor         Float
+  descricao     String
+  categoria     String   // ORCAMENTO_APROVADO, TAXA_PLATAFORMA, SAQUE, DEPOSITO, LEAD_QUENTE, ENVIO_ORCAMENTO
+  status        String   @default("PENDENTE") // PENDENTE, APROVADO, REJEITADO, CANCELADO
+  referencia_id String?  // ID do contrato/orçamento/pagamento que gerou (opcional)
+  referencia_tipo String? // CONTRATO, ORCAMENTO, PAGAMENTO, SAQUE, DEPOSITO
+  data_movimentacao DateTime @default(now())
+  data_criacao   DateTime @default(now())
+  data_atualizacao DateTime @updatedAt
+  usuario        Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@index([usuario_id, data_movimentacao])
+  @@index([usuario_id, status])
+  @@map("movimentacoes_financeiras")
+}
+
+model ContaBancaria {
+  id            String   @id @default(uuid())
+  usuario_id   String
+  banco         String
+  agencia       String
+  conta         String
+  tipo          String   // CORRENTE ou POUPANCA
+  titular       String
+  cpf_cnpj      String
+  principal     Boolean  @default(false) // Se é a conta principal
+  ativa         Boolean  @default(true)
+  data_criacao  DateTime @default(now())
+  data_atualizacao DateTime @updatedAt
+  usuario       Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@index([usuario_id])
+  @@map("contas_bancarias")
+}
+
+model Cartao {
+  id              String   @id @default(uuid())
+  usuario_id      String
+  numero_hash     String   // Últimos 4 dígitos (mascarado)
+  nome_titular    String
+  validade        String   // MM/AA
+  tipo            String   // CREDITO ou DEBITO
+  bandeira        String?  // VISA, MASTERCARD, ELO, AMEX
+  principal       Boolean  @default(false) // Se é o cartão principal
+  ativo           Boolean  @default(true)
+  data_criacao    DateTime @default(now())
+  data_atualizacao DateTime @updatedAt
+  usuario         Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@index([usuario_id])
+  @@map("cartoes")
+}
+
+enum TipoUsuario {
+  CLIENTE
+  PRESTADOR
+  MODERADOR
+  ADMIN
+}
+
+enum TipoPost {
+  SOLICITACAO
+  OFERTA
+  VITRINE_PRESTADOR
+  VITRINE_CLIENTE
+}
+
+enum Urgencia {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
+enum Disponibilidade {
+  COMERCIAL_24_7 // 24 horas, 7 dias por semana
+  COMERCIAL_8_5 // Comercial (8h às 18h, segunda a sexta)
+  COMERCIAL_8_7 // Comercial + finais de semana
+}
+
+enum StatusPost {
+  ATIVO
+  ORCAMENTO_ACEITO // Cliente aceitou um orçamento
+  TRABALHO_CONCLUIDO // Prestador marcou como concluído, aguardando confirmação do cliente
+  INATIVO // Cliente confirmou conclusão, post finalizado
+  FINALIZADO // Status legado (compatibilidade)
+  CANCELADO
+  ARQUIVADO
+}
+
+enum StatusOrcamento {
+  PENDENTE
+  ACEITO
+  RECUSADO
+  CANCELADO
+  EXPIRADO
+}
+
+enum StatusContrato {
+  ATIVO
+  EM_EXECUCAO
+  CONCLUIDO
+  CANCELADO
+  DISPUTADO
+}
+
+enum MetodoPagamento {
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  PIX
+  BOLETO
+  TRANSFERENCIA
+}
+
+enum StatusPagamento {
+  PENDENTE
+  PAGO
+  AGUARDANDO_LIBERACAO
+  LIBERADO
+  REEMBOLSADO
+  DISPUTADO
+}
+
+enum TipoDisputa {
+  SERVICO_INCOMPLETO
+  QUALIDADE_INFERIOR
+  MATERIAL_DIFERENTE
+  ATRASO_EXCESSIVO
+  COMPORTAMENTO_INADEQUADO
+}
+
+enum StatusDisputa {
+  ABERTA
+  EM_ANALISE
+  RESOLVIDA
+  CANCELADA
+}
+
+enum TipoMensagem {
+  TEXTO
+  IMAGEM
+  ARQUIVO
+  SISTEMA
+}
+
+enum TipoNotificacao {
+  NOVO_ORCAMENTO
+  ORCAMENTO_ACEITO
+  ORCAMENTO_RECUSADO
+  NOVA_MENSAGEM
+  PAGAMENTO_CONFIRMADO
+  SERVICO_CONCLUIDO
+  DISPUTA_ABERTA
+  DISPUTA_RESOLVIDA
+  LEMBRETE_PRAZO
+  PROMOCAO
+  LEAD_QUENTE
+}
+
+model TokenVerificacao {
+  id         String    @id @default(uuid())
+  usuario_id String
+  token      String    @unique
+  tipo       TipoToken
+  expira_em  DateTime
+  usado      Boolean   @default(false)
+  criado_em  DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@map("tokens_verificacao")
+}
+
+enum TipoToken {
+  VERIFICACAO_EMAIL
+  RECUPERACAO_SENHA
+}
+
+model LoginAttempt {
+  id            String    @id @default(uuid())
+  ip            String
+  email         String?
+  success       Boolean
+  user_agent    String?
+  blocked       Boolean   @default(false)
+  block_expires DateTime?
+  created_at    DateTime  @default(now())
+
+  @@index([ip, created_at])
+  @@index([email, created_at])
+  @@index([blocked, block_expires])
+  @@map("login_attempts")
+}
+
+model ConfiguracoesSistema {
+  id            String   @id @default(uuid())
+  chave         String   @unique // Ex: 'TEMPO_LIBERACAO_PRESTADOR'
+  valor         String   // Valor da configuração (ex: "24" para horas)
+  descricao     String?  // Descrição do que a configuração faz
+  tipo          String   // 'INTEGER' | 'STRING' | 'BOOLEAN' | 'FLOAT'
+  data_criacao  DateTime @default(now())
+  data_atualizacao DateTime @updatedAt
+
+  @@map("configuracoes_sistema")
+}
+
+model MensagemAutomatica {
+  id             String   @id @default(uuid())
+  tipo           String // Tipo: ORIENTACAO_CLIENTE_ORCAMENTO, ORIENTACAO_PRESTADOR_NEGOCIAR, etc
+  titulo         String
+  conteudo       String
+  ativo          Boolean  @default(true)
+  data_criacao   DateTime @default(now())
+  data_update    DateTime @updatedAt
+  criado_por     String? // ID do admin que criou
+  atualizado_por String? // ID do admin que atualizou
+
+  @@unique([tipo])
+  @@map("mensagens_automaticas")
+}

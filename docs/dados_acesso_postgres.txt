@@ -1,0 +1,10 @@
+Parâmetro	Valor
+Host	localhost
+Porta	5432
+Banco de dados (Database)	chamadopro
+Usuário (User)	chamadopro_user
+Senha (Password)	chamadopro
+Schema padrão	public
+Versão do PostgreSQL	18.0
+Permissões	chamadopro_user é dono do schema public e possui todos os privilégios
+Status atual	Banco e usuário funcionando (testado com psql e Prisma)

@@ -1,0 +1,65 @@
+# 💼 ChamadoPro  
+### Plataforma Inteligente de Intermediação de Serviços  
+
+📦 **Versão:** v3.2.1  
+📅 **Atualizado em:** 31/10/2025  
+🧑‍💻 **Responsável Técnico:** Alexandro Trova  
+🏢 **Empresa:** ChamadoPro  
+
+---
+
+## 📑 Sumário
+- [🚀 Visão Geral](#-visão-geral)
+- [🧩 Funcionalidades Implementadas](#-funcionalidades-implementadas)
+- [⚙️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+- [📁 Estrutura do Projeto](#-estrutura-do-projeto)
+- [▶️ Como Executar o Projeto](#️-como-executar-o-projeto)
+- [🔐 Segurança e Acesso](#-segurança-e-acesso)
+- [📈 Performance e Escalabilidade](#-performance-e-escalabilidade)
+- [📘 Documentação Técnica](#-documentação-técnica)
+- [🧾 Checklists e Histórico](#-checklists-e-histórico)
+- [🧱 Próximos Passos](#-próximos-passos)
+- [📩 Contato e Créditos](#-contato-e-créditos)
+
+---
+
+## 🚀 Visão Geral
+O **ChamadoPro** é uma plataforma inteligente de **intermediação de serviços**, conectando clientes a prestadores qualificados.  
+Desenvolvido com foco em **segurança, automação e experiência**, o sistema oferece:
+
+- Cadastro completo de clientes e prestadores;  
+- Sistema de orçamentos e propostas dinâmicas;  
+- Pagamentos com **escrow (intermediação segura)**;  
+- Contratos automáticos e histórico de atendimento;  
+- Notificações em tempo real via WebSocket;  
+- Painel administrativo e interface moderna.  
+
+---
+
+## 🧩 Funcionalidades Implementadas
+- **Cadastro de Cliente e Prestador** com validação de CPF/CNPJ.  
+- **Gestão de Chamados:** abertura, orçamentos e status.  
+- **Taxa de Orçamento e Pagamentos Escrow** via integração segura.  
+- **Criação Automática de Contratos** entre as partes.  
+- **Sistema de Notificações WebSocket.**  
+- **Logs e Auditoria Completa** (pasta `/Checklist/`).  
+- **Controle de Histórico de Implementações e Pendências.**  
+
+---
+
+## ⚙️ Tecnologias Utilizadas
+
+| Área | Tecnologia | Descrição |
+|------|-------------|-----------|
+| **Backend** | Node.js + Express + Prisma | API RESTful e ORM conectado ao PostgreSQL |
+| **Frontend** | Next.js + React + Zustand | SPA moderna e responsiva |
+| **Banco de Dados** | PostgreSQL | Armazenamento seguro e escalável |
+| **Infraestrutura** | Docker + Docker Compose | Ambientes isolados e reprodutíveis |
+| **Autenticação** | JWT (JSON Web Token) | Controle de acesso seguro |
+| **Comunicação em Tempo Real** | WebSocket | Atualização imediata de notificações e status |
+| **Logs e Auditoria** | Winston + Checklists | Monitoramento e rastreabilidade |
+| **Controle de Versão** | Git + Snapshots internos | Histórico documental técnico |
+
+---
+
+## 📁 Estrutura do Projeto

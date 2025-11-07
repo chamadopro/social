@@ -63,3 +63,86 @@ Desenvolvido com foco em **segurança, automação e experiência**, o sistema o
 ---
 
 ## 📁 Estrutura do Projeto
+
+```
+chamadopro/
+├─ backend/        # API Node.js (Express + Prisma)
+├─ frontend/       # Frontend Next.js + Zustand
+├─ docs/           # Documentação oficial (ver seção abaixo)
+├─ Checklist/      # Checklists históricos preservados
+└─ shared/         # Utilitários compartilhados (se aplicável)
+```
+
+- **Ambiente local**: cada pasta possui seu próprio `README` com instruções de setup.
+- **Documentação detalhada** agora está centralizada em `docs/README.md`.
+
+---
+
+## ▶️ Como Executar o Projeto
+Consulte as instruções de setup rápido no `frontend/README.md` e `backend/README.md` (ou nos respectivos `docs`):
+
+1. **Backend**
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
+2. **Frontend**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+3. **Variáveis**
+   - `backend/.env`: configure `DATABASE_URL`, chaves JWT, integrações sociais.
+   - `frontend/.env.local`: configure `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SOCKET_URL`.
+
+---
+
+## 🔐 Segurança e Acesso
+- Autenticação JWT (usuários finais e administradores).
+- Painel admin protegido (`/admin`) só para `tipo: 'ADMIN'`.
+- Rate limiting ativado em produção (desativado no dev para facilitar testes).
+- Diretrizes completas em `docs/SECURITY_GUIDELINES.md` e `docs/infra/DOCUMENTACAO_SEGURANCA.md`.
+
+---
+
+## 📈 Performance e Escalabilidade
+- Estrutura Prisma/PostgreSQL otimizada com índices nas principais consultas.
+- Notificações e dashboard usando cargas leves + cache em memória.
+- Próximas melhorias planejadas em `docs/historico/REVISAO_IMPLEMENTACAO.md` e no backlog do painel admin.
+
+---
+
+## 📘 Documentação Técnica
+- Índice completo: [`docs/README.md`](docs/README.md)
+- Painel admin: [`docs/admin/PAINEL_ADMIN.md`](docs/admin/PAINEL_ADMIN.md)
+- Deploy QA: [`docs/admin/DEPLOY_QA.md`](docs/admin/DEPLOY_QA.md)
+- Banco compartilhado: [`docs/admin/BANCO_COMPARTILHADO.md`](docs/admin/BANCO_COMPARTILHADO.md)
+- Infraestrutura & mobile: [`docs/infra/`](docs/infra/)
+
+---
+
+## 🧾 Checklists e Histórico
+- Índice consolidado: [`docs/historico/CHECKLISTS.md`](docs/historico/CHECKLISTS.md)
+- Guias Git/GitHub: [`docs/historico/`](docs/historico/)
+- Pasta original `Checklist/` preservada (pode ser consultada conforme necessidade).
+
+---
+
+## 🧱 Próximos Passos
+- Evoluir página `/admin/configuracoes` com ajustes dinâmicos.
+-, Gráficos interativos nos relatórios avançados.
+- Automatizar testes e pipeline de deploy.
+- Detalhes e prioridades atualizados em `docs/historico/REVISAO_IMPLEMENTACAO.md`.
+
+---
+
+## 📩 Contato e Créditos
+- **Responsável Técnico**: Alexandro Trova – `alex@chamadopro.com.br`
+- **Suporte técnico**: `dev@chamadopro.com.br`
+- **Canal interno**: Slack `#chamadopro-dev`
+
+---
+
+© 2025 ChamadoPro. Documentação reorganizada em 06/11/2025.

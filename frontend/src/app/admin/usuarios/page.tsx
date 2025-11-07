@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -32,6 +32,7 @@ export default function AdminUsuariosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filters, setFilters] = useState({
     status: 'all',
     tipo: 'all'
@@ -42,14 +43,32 @@ export default function AdminUsuariosPage() {
     total: 0,
     pages: 0
   });
+  const [togglingUserId, setTogglingUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchUsuarios();
-  }, [pagination.page, filters]);
+    const handler = setTimeout(() => {
+      setDebouncedSearch((prev) => {
+        const nextValue = searchTerm.trim();
+        return prev === nextValue ? prev : nextValue;
+      });
+    }, 300);
 
-  const fetchUsuarios = async () => {
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setPagination((prev) => {
+      if (prev.page === 1) {
+        return prev;
+      }
+      return { ...prev, page: 1 };
+    });
+  }, [debouncedSearch]);
+
+  const fetchUsuarios = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const params: any = {
         page: pagination.page,
         limit: pagination.limit
@@ -63,30 +82,29 @@ export default function AdminUsuariosPage() {
         params.tipo = filters.tipo;
       }
 
+      if (debouncedSearch) {
+        params.search = debouncedSearch;
+      }
+
       const response = await api.get('/admin/usuarios', params);
 
       if (response.success && response.data) {
-        let usuariosData = response.data;
-        
-        // Se response.data tem pagination, ajustar
+        if (Array.isArray(response.data)) {
+          setUsuarios(response.data);
+        }
+
         if (response.pagination) {
-          usuariosData = response.data;
-          setPagination({
-            ...pagination,
+          setPagination((prev) => ({
+            ...prev,
             total: response.pagination.total,
             pages: response.pagination.pages
-          });
-        } else if (Array.isArray(usuariosData)) {
-          setUsuarios(usuariosData);
-        } else if (usuariosData.data && Array.isArray(usuariosData.data)) {
-          setUsuarios(usuariosData.data);
-          if (usuariosData.pagination) {
-            setPagination({
-              ...pagination,
-              total: usuariosData.pagination.total,
-              pages: usuariosData.pagination.pages
-            });
-          }
+          }));
+        } else {
+          setPagination((prev) => ({
+            ...prev,
+            total: Array.isArray(response.data) ? response.data.length : prev.total,
+            pages: 1
+          }));
         }
       } else {
         setError('Erro ao carregar usuários');
@@ -96,10 +114,15 @@ export default function AdminUsuariosPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, filters.status, filters.tipo, debouncedSearch]);
+
+  useEffect(() => {
+    fetchUsuarios();
+  }, [fetchUsuarios]);
 
   const handleToggleStatus = async (usuarioId: string, ativo: boolean) => {
     try {
+      setTogglingUserId(usuarioId);
       const response = await api.put(`/admin/usuarios/${usuarioId}/toggle`, { ativo: !ativo });
 
       if (response.success) {
@@ -108,7 +131,6 @@ export default function AdminUsuariosPage() {
           title: 'Sucesso',
           description: response.message || `Usuário ${!ativo ? 'ativado' : 'desativado'} com sucesso`
         });
-        fetchUsuarios();
       } else {
         addToast({
           type: 'error',
@@ -122,19 +144,11 @@ export default function AdminUsuariosPage() {
         title: 'Erro',
         description: err.message || 'Erro ao alterar status do usuário'
       });
+    } finally {
+      setTogglingUserId(null);
+      fetchUsuarios();
     }
   };
-
-  const filteredUsuarios = usuarios.filter(usuario => {
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      return (
-        usuario.nome.toLowerCase().includes(search) ||
-        usuario.email.toLowerCase().includes(search)
-      );
-    }
-    return true;
-  });
 
   const getTipoBadgeColor = (tipo: string) => {
     switch (tipo) {
@@ -168,7 +182,9 @@ export default function AdminUsuariosPage() {
             <Input
               placeholder="Buscar por nome ou email..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
               className="pl-10"
             />
           </div>
@@ -180,7 +196,7 @@ export default function AdminUsuariosPage() {
               value={filters.status}
               onChange={(e) => {
                 setFilters({ ...filters, status: e.target.value });
-                setPagination({ ...pagination, page: 1 });
+                setPagination((prev) => ({ ...prev, page: 1 }));
               }}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
@@ -195,7 +211,7 @@ export default function AdminUsuariosPage() {
             value={filters.tipo}
             onChange={(e) => {
               setFilters({ ...filters, tipo: e.target.value });
-              setPagination({ ...pagination, page: 1 });
+              setPagination((prev) => ({ ...prev, page: 1 }));
             }}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -245,14 +261,14 @@ export default function AdminUsuariosPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredUsuarios.length === 0 ? (
+                  {usuarios.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                         Nenhum usuário encontrado
                       </td>
                     </tr>
                   ) : (
-                    filteredUsuarios.map((usuario) => (
+                    usuarios.map((usuario) => (
                       <tr key={usuario.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
@@ -286,16 +302,17 @@ export default function AdminUsuariosPage() {
                             variant={usuario.ativo ? 'outline' : 'default'}
                             size="sm"
                             className="ml-auto"
+                            disabled={togglingUserId === usuario.id}
                           >
                             {usuario.ativo ? (
                               <>
                                 <UserX className="h-4 w-4 mr-1" />
-                                Desativar
+                                {togglingUserId === usuario.id ? 'Processando...' : 'Desativar'}
                               </>
                             ) : (
                               <>
                                 <UserCheck className="h-4 w-4 mr-1" />
-                                Ativar
+                                {togglingUserId === usuario.id ? 'Processando...' : 'Ativar'}
                               </>
                             )}
                           </Button>
@@ -316,7 +333,7 @@ export default function AdminUsuariosPage() {
               </p>
               <div className="flex gap-2">
                 <Button
-                  onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+                  onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
                   disabled={pagination.page === 1}
                   variant="outline"
                   size="sm"
@@ -325,7 +342,7 @@ export default function AdminUsuariosPage() {
                   Anterior
                 </Button>
                 <Button
-                  onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+                  onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
                   disabled={pagination.page >= pagination.pages}
                   variant="outline"
                   size="sm"

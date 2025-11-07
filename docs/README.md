@@ -1,196 +1,84 @@
-# 📘 ChamadoPro – Documentação Técnica  
-### Plataforma Inteligente de Intermediação de Serviços  
+# 📘 ChamadoPro – Documentação Técnica
 
-📦 **Versão Atual:** 3.2.1  
-📅 **Última Atualização:** 31/10/2025  
-🧑‍💻 **Responsável Técnico:** Alexandro Trova  
-🏢 **Empresa:** ChamadoPro  
+> Este diretório centraliza toda a documentação do projeto. Os arquivos estão agrupados por tema para facilitar a navegação e evitar redundâncias.
 
----
+## 🗂️ Estrutura
 
-## 📚 Índice da Documentação
+```
+docs/
+ ├─ admin/        → Painel administrativo e governança
+ ├─ infra/        → Infraestrutura, deploy e mobilidade
+ ├─ historico/    → Registros, guias de git e checklists
+ └─ *.md          → Documentação técnica geral (API, manutenção, segurança, etc.)
+```
 
-Esta pasta contém toda a **documentação técnica oficial do sistema ChamadoPro**, organizada para facilitar a manutenção, o suporte e a evolução contínua da plataforma.
+### 📑 Documentos gerais
+| Documento | Descrição |
+|-----------|-----------|
+| [DOCUMENTACAO_TECNICA_MANUTENCAO.md](./DOCUMENTACAO_TECNICA_MANUTENCAO.md) | Guia completo de manutenção, arquitetura e troubleshooting. |
+| [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) | Referência da API (endpoints, parâmetros, exemplos). |
+| [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) | Deploy padrão de produção/infra. |
+| [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md) | Diretrizes de segurança e compliance. |
+| [AUDITORIA_FUNCIONALIDADES.md](./AUDITORIA_FUNCIONALIDADES.md) | Auditoria funcional e cobertura atual. |
+| [DOCUMENTACAO_TECNICA_CHAMADOPRO_v3.2.md](./DOCUMENTACAO_TECNICA_CHAMADOPRO_v3.2.md) | snapshot técnico consolidado (versão 3.2). |
+| [DOCUMENTACAO_TECNICA_MANUTENCAO.md](./DOCUMENTACAO_TECNICA_MANUTENCAO.md#troubleshooting) | Seção de troubleshooting com incidentes recorrentes. |
 
-> 🧭 Utilize este repositório para entender **como o sistema funciona internamente**, como ele é **implantado, mantido e auditado**, e como as integrações são gerenciadas.
+### 🛡️ Diretório `admin/`
+Documentação do painel administrativo:
 
----
+| Arquivo | Descrição |
+|---------|-----------|
+| [PAINEL_ADMIN.md](./admin/PAINEL_ADMIN.md) | Visão funcional de cada página do admin. |
+| [DEPLOY_QA.md](./admin/DEPLOY_QA.md) | Guia de deploy em ambiente de homologação (QA). |
+| [ARQUITETURA_FASES.md](./admin/ARQUITETURA_FASES.md) | Roadmap faseado do painel administrativo. |
+| [BANCO_COMPARTILHADO.md](./admin/BANCO_COMPARTILHADO.md) | Estratégia de banco compartilhado entre sistemas. |
 
-## 📋 Documentos Disponíveis
+### ⚙️ Diretório `infra/`
+Guia de infraestrutura, mobile e banco de dados:
 
-### 🔧 [Documentação de Manutenção](./DOCUMENTACAO_TECNICA_MANUTENCAO.md)
-**Para desenvolvedores e equipe de suporte**
+| Arquivo | Descrição |
+|---------|-----------|
+| [DOCUMENTACAO_BANCO_DADOS.md](./infra/DOCUMENTACAO_BANCO_DADOS.md) | Estrutura do banco e procedimentos. |
+| [DOCUMENTACAO_SEGURANCA.md](./infra/DOCUMENTACAO_SEGURANCA.md) | Segurança aplicada em infraestrutura. |
+| [CONFIGURACAO_MOBILE_DEV.md](./infra/CONFIGURACAO_MOBILE_DEV.md) | Configuração de ambiente mobile. |
+| [GUIA_CONVERSAO_APK_CAPACITOR.md](./infra/GUIA_CONVERSAO_APK_CAPACITOR.md) | Conversão do app para APK (Capacitor). |
+| [GUIA_TESTE_MOBILE_DEV.md](./infra/GUIA_TESTE_MOBILE_DEV.md) | Roteiro de testes mobile. |
+| [TROUBLESHOOTING_MOBILE.md](./infra/TROUBLESHOOTING_MOBILE.md) | Problemas comuns em mobile e soluções. |
 
-Inclui:
-- Arquitetura e estrutura do projeto  
-- Configuração do ambiente de desenvolvimento  
-- Detalhes técnicos do backend e frontend  
-- Banco de dados e APIs  
-- Deploy e produção  
-- Monitoramento e logs  
-- Troubleshooting  
-- Manutenção preventiva  
-- Atualizações e versionamento  
+### 🧾 Diretório `historico/`
+Registros, guias de Git e referências de evolução:
 
----
+| Arquivo | Descrição |
+|---------|-----------|
+| [CHECKLISTS.md](./historico/CHECKLISTS.md) | Índice da pasta `Checklist/` com passo a passo histórico. |
+| [CONFIGURAR_GIT_EMPRESA.md](./historico/CONFIGURAR_GIT_EMPRESA.md) | Configuração Git com e-mail corporativo. |
+| [PRIMEIRO_COMMIT.md](./historico/PRIMEIRO_COMMIT.md) | Sequência do primeiro commit/deploy. |
+| [INSTALAR_GIT.md](./historico/INSTALAR_GIT.md) | Instalação do Git em Windows. |
+| [COMANDOS_GIT_COMPLETO.md](./historico/COMANDOS_GIT_COMPLETO.md) | Comandos básicos de Git. |
+| [COMANDOS_GIT_MANUAL.md](./historico/COMANDOS_GIT_MANUAL.md) | Script manual de versionamento. |
+| [GIT_APOS_INSTALACAO.md](./historico/GIT_APOS_INSTALACAO.md) | Passos e checklist após instalar o Git. |
+| [GIT_EMAIL_EXPLICACAO.md](./historico/GIT_EMAIL_EXPLICACAO.md) | Boas práticas de e-mail nos commits. |
+| [ONDE_EXECUTAR_GIT.md](./historico/ONDE_EXECUTAR_GIT.md) | Orientação de diretórios para comandos. |
+| [CONFIGURAR_GIT.md](./historico/CONFIGURAR_GIT.md) | Guia genérico de configuração Git. |
+| [GUIA_CONFIGURACAO_GIT.md](./historico/GUIA_CONFIGURACAO_GIT.md) | Guia ampliado (histórico). |
+| [LIMPEZA_COMENTARIOS.md](./historico/LIMPEZA_COMENTARIOS.md) | Registro da limpeza de comentários realizada. |
+| [REVISAO_IMPLEMENTACAO.md](./historico/REVISAO_IMPLEMENTACAO.md) | Resumo das últimas implementações. |
+| [TESTES_INSTRUCOES.md](./historico/TESTES_INSTRUCOES.md) | Instruções gerais de testes. |
 
-### 🌐 [Documentação da API](./API_DOCUMENTATION.md)
-**Para desenvolvedores e integrações**
+> 🔎 A pasta `Checklist/` na raiz continua intacta. Consulte `docs/historico/CHECKLISTS.md` para entender a ordem de leitura e status real de cada checklist.
 
-Inclui:
-- Estrutura da API RESTful  
-- Autenticação e autorização  
-- Endpoints disponíveis  
-- Parâmetros e respostas  
-- Códigos HTTP e mensagens de erro  
-- Exemplos de requisição e resposta  
-- Rate limiting e webhooks  
+## 🔄 Boas práticas de atualização
 
----
+1. **Documente mudanças relevantes** junto ao pull request (preferencialmente no diretório correto).
+2. **Evite duplicidade**: verifique se já existe um arquivo sobre o assunto antes de criar um novo.
+3. **Atualize links** quando mover/renomear arquivos.
+4. **Checklists**: registrar status em `Checklist/` e atualizar o índice (`docs/historico/CHECKLISTS.md`).
 
-### 🚀 [Guia de Deploy](./DEPLOYMENT_GUIDE.md)
-**Para DevOps e administradores**
-
-Inclui:
-- Pré-requisitos do servidor  
-- Configuração de ambiente  
-- Deploy do backend e frontend  
-- Banco de dados e variáveis de ambiente  
-- Monitoramento e backup  
-- Recuperação e manutenção  
-
----
-
-### 🔒 [Diretrizes de Segurança](./SECURITY_GUIDELINES.md)
-**Para equipe de segurança e compliance**
-
-Inclui:
-- Segurança da aplicação e APIs  
-- Proteção de dados (LGPD)  
-- Controle de acesso e autenticação  
-- Criptografia e auditoria  
-- Monitoramento de incidentes  
-- Política de resposta e conformidade  
-
----
-
-## 🧩 Integrações Internas e Referências
-- [📁 Checklists e Implementações](../Checklist/00_INDEX.md)  
-- [🧾 Snapshot Atual – 31/10/2025](../Checklist/_snapshot_2025-10-31/SNAPSHOT_INFO.md)  
-- [📘 Documentação Técnica ChamadoPro v3.2](./DOCUMENTACAO_TECNICA_CHAMADOPRO_v3.2.md)  
-- [📊 Auditoria de Funcionalidades](./AUDITORIA_FUNCIONALIDADES.md)  
-- [📄 Resumo Executivo](./RESUMO_EXECUTIVO.md)  
+## 📬 Contato e suporte
+- Issues e dúvidas: abrir issue no GitHub.
+- Canal interno: Slack `#chamadopro-dev`.
+- Email técnico: `dev@chamadopro.com.br`.
 
 ---
 
-## 🎯 Público-Alvo
-
-| Perfil | Documentos Indicados |
-|---------|----------------------|
-| 👨‍💻 **Desenvolvedores** | Manutenção, API, Segurança |
-| 🔧 **Equipe de Suporte** | Manutenção, Troubleshooting |
-| 🚀 **DevOps/Admins** | Deploy, Segurança |
-| 🔒 **Equipe de Segurança** | Segurança, Auditoria, Manutenção |
-
----
-
-## 📖 Como Usar Esta Documentação
-
-1. **Primeira vez no projeto?**  
-   👉 Comece pela [Documentação de Manutenção](./DOCUMENTACAO_TECNICA_MANUTENCAO.md)
-
-2. **Precisa integrar via API?**  
-   👉 Consulte a [Documentação da API](./API_DOCUMENTATION.md)
-
-3. **Vai implantar em produção?**  
-   👉 Siga o [Guia de Deploy](./DEPLOYMENT_GUIDE.md)
-
-4. **Questões de segurança?**  
-   👉 Revise as [Diretrizes de Segurança](./SECURITY_GUIDELINES.md)
-
-5. **Problema técnico?**  
-   👉 Vá direto para a seção *Troubleshooting* em [Manutenção](./DOCUMENTACAO_TECNICA_MANUTENCAO.md#troubleshooting)
-
----
-
-## 🔄 Atualizações da Documentação
-
-| Campo | Valor |
-|--------|-------|
-| **Versão Atual** | 3.2.1 |
-| **Última Atualização** | Outubro 2025 |
-| **Próxima Revisão** | Dezembro 2025 |
-
-### Processo de Atualização
-1. Atualizar conforme mudanças no código  
-2. Registrar novas funcionalidades em `DOCUMENTACAO_TECNICA_MANUTENCAO.md`  
-3. Atualizar endpoints modificados na `API_DOCUMENTATION.md`  
-4. Revisar diretrizes de segurança após auditorias  
-5. Validar processo de deploy após alterações de ambiente  
-
----
-
-## 📞 Suporte
-
-### Equipe Técnica
-| Função | Contato |
-|--------|----------|
-| **Responsável Técnico** | Alexandro Trova – alex@chamadopro.com.br |
-| **Backend Lead** | [Nome] – backend@chamadopro.com.br |
-| **Frontend Lead** | [Nome] – frontend@chamadopro.com.br |
-| **DevOps** | [Nome] – devops@chamadopro.com.br |
-| **Segurança** | [Nome] – security@chamadopro.com.br |
-
-### Canais
-- Slack: `#chamadopro-dev`  
-- Email: `dev@chamadopro.com.br`  
-- Issues: GitHub Issues  
-- Wiki interna: Confluence (se aplicável)
-
----
-
-## 🏷️ Tags e Categorias
-
-| Tipo | Exemplo |
-|------|----------|
-| `#manutencao` | Documentação de manutenção |
-| `#api` | Documentação de API |
-| `#deploy` | Guia de deploy |
-| `#seguranca` | Diretrizes de segurança |
-| `#desenvolvedor` | Para desenvolvedores |
-| `#suporte` | Para suporte |
-| `#devops` | Para DevOps |
-| `#critico` | Informações críticas |
-
----
-
-## 📊 Métricas e Qualidade
-
-| Métrica | Status |
-|----------|--------|
-| **Total de Documentos** | 4 principais |
-| **Total de Seções** | 50+ |
-| **Exemplos de Código** | 100+ |
-| **Cobertura de Funcionalidades** | 100% |
-| **Revisão Técnica** | ✅ Completa |
-| **Revisão de Segurança** | ✅ Completa |
-| **Validação de Deploy** | ✅ Validado |
-| **Última Revisão Geral** | ✅ Outubro 2025 |
-
----
-
-## 🎯 Próximos Passos
-
-1. Criar **Documentação de Testes Automatizados**  
-2. Criar **Documentação de Performance e Escalabilidade**  
-3. Adicionar **Guia de Integrações com Terceiros**  
-4. Incluir **Tutoriais em Vídeo (Onboarding)**  
-
-📩 Feedback e sugestões:  
-**Email:** docs@chamadopro.com.br  
-**Slack:** `#documentation-feedback`
-
----
-
-© 2025 **ChamadoPro** – Plataforma Inteligente de Serviços  
-Todos os direitos reservados.
+© 2025 ChamadoPro. Documentação reorganizada em 06/11/2025.

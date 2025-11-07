@@ -71,14 +71,28 @@ export class AdminController {
   // Gerenciar usuários
   public async manageUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { page = 1, limit = 20, status, tipo } = req.query;
+      const { page = 1, limit = 20, status, tipo, search } = req.query;
 
       const skip = (Number(page) - 1) * Number(limit);
       const take = Number(limit);
 
       const where: any = {};
-      if (status) where.ativo = status === 'ativo';
-      if (tipo) where.tipo = tipo;
+
+      if (status && typeof status === 'string' && status !== 'all') {
+        where.ativo = status === 'ativo';
+      }
+
+      if (tipo && typeof tipo === 'string' && tipo !== 'all') {
+        where.tipo = tipo.toUpperCase();
+      }
+
+      if (search && typeof search === 'string' && search.trim().length > 0) {
+        const searchTerm = search.trim();
+        where.OR = [
+          { nome: { contains: searchTerm, mode: 'insensitive' as const } },
+          { email: { contains: searchTerm, mode: 'insensitive' as const } }
+        ];
+      }
 
       const [usuarios, total] = await Promise.all([
         config.prisma.usuario.findMany({
